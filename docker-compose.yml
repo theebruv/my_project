@@ -1,0 +1,35 @@
+services:
+    web:
+        build: ./web
+        ports:
+            - "8080:8080"
+        depends_on:
+            - database
+            - cache
+        environment:
+            - DATABASE_URL=postgresql://postgres:password@database:5432/myapp
+            - REDIS_URL=redis://cache:6379
+        networks:
+            - app-network
+
+    database:
+        build: ./database
+        environment:
+            - POSTGRES_DB=myapp
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=password
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        networks:
+            - app-network
+
+    cache:
+        build: ./cache
+        networks:
+            - app-network
+
+volumes:
+    db-data:
+
+networks:
+    app-network:
